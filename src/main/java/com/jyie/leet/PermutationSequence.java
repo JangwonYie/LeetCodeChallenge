@@ -41,63 +41,61 @@ import java.util.List;
 
  A string representing the kth item in the lexicographically ordered permutation sequence for n!.
  * Created by Jangwon Yie on 3/9/17.
+ * update by Jangwon Yie on 3/29/18.
  */
 public class PermutationSequence {
-    String permutationSequence(int n, int k) {
+    public String getPermutation(int n, int k) {
 
-        StringBuffer sb = new StringBuffer();
-        permutationSequence_(sb, new NumberW(n),k-1);
+        int[] array = new int[n];
+        for(int i=0;i<n;i++){
+            array[i] = i+1;
+        }
 
-        return sb.toString();
+        StringBuffer result = getPermutation(array,k);
+        return result.toString();
     }
 
-    private static class NumberW{
+    private StringBuffer getPermutation(int[] array, int k){
+        int length = array.length;
 
-        List<Integer> list;
-
-        NumberW(int n){
-            list = new ArrayList<Integer>();
-            for(int i=1;i<=n;i++){
-                list.add(i);
-            }
+        if(length == 1){
+            StringBuffer sb = new StringBuffer();
+            sb.append(array[0]);
+            return sb;
         }
 
-        private void remove(int i){
-            list.remove(i);
-        }
+        int first = getFirstIndex(length, k);
+        int[] remains = new int[length - 1];
 
-        private int getSize(){
-            return list.size();
-        }
+        System.arraycopy(array, 0, remains, 0, first);
+        System.arraycopy(array, first+1, remains, first, length - first-1);
 
-        private int get(int i){
-            return list.get(i);
-        }
+        int firstNumber = array[first];
+        StringBuffer firstBuffer = new StringBuffer();
+        firstBuffer.append(firstNumber);
+        StringBuffer sb = getPermutation(remains, getNextIndex(length,k));
+        firstBuffer.append(sb);
+
+        return firstBuffer;
     }
 
-    private void permutationSequence_(StringBuffer sb, NumberW numW, int k){
-        int n = numW.getSize();
-        if(n==0)
-            return;
-
+    private int getFirstIndex(int n, int k){
         int module = factorial(n-1);
-
-        int index = k/module;
-        int k_ = k%module;
-
-        int n_ = numW.get(index);
-
-        sb.append(n_);
-        numW.remove(index);
-
-        permutationSequence_(sb,numW,k_ );
+        return (k-1)/module;
     }
 
-    private int factorial(int n){
+    private int getNextIndex(int n, int k){
+        int module = factorial(n-1);
+        int temp = k%module;
+        if(0 != temp)
+            return temp;
+        else
+            return temp + module;
+    }
 
-        if(n==1 || n==0)
+    private int factorial(int k){
+        if(k<=1)
             return 1;
-
-        return n*factorial(n-1);
+        return k*factorial(k-1);
     }
 }
